@@ -11,5 +11,3 @@ path = "src/main.rs"
 [[bin]]
 name = "cc"
 path = "src/gcc_forwarder.rs"
-
-[dependencies]
