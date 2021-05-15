@@ -4,6 +4,12 @@ version = "0.1.0"
 authors = ["jam1garner <8260240+jam1garner@users.noreply.github.com>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "fake-ld"
+path = "src/main.rs"
+
+[[bin]]
+name = "cc"
+path = "src/gcc_forwarder.rs"
 
 [dependencies]
