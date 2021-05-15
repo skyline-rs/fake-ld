@@ -16,7 +16,7 @@ fn main() {
         .flatten()
         .collect();
 
-    let status = Command::new("aarch64-none-elf-ld").args(&args).status().unwrap();
+    let status = Command::new("ld.lld").args(&args).status().unwrap();
 
     if let Some(x) = status.code() {
         std::process::exit(x);
