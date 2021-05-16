@@ -11,3 +11,10 @@ path = "src/main.rs"
 [[bin]]
 name = "cc"
 path = "src/gcc_forwarder.rs"
+
+[[bin]]
+name = "rust-zip"
+path = "src/rust-zip.rs"
+
+[dependencies]
+zip = "0.5.12"
