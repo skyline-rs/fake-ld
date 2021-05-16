@@ -18,16 +18,16 @@ fn llvm_path() -> Option<PathBuf> {
         .ok()?;
 
     if brew_output.status.success() {
-        Some(Path::new(std::str::from_utf8(&brew_output.stdout).ok()?).join("bin"))
+        Some(Path::new(std::str::from_utf8(&brew_output.stdout).ok()?.trim()).join("bin"))
     } else {
         None
     }
 }
 
 fn brew_path() -> Option<PathBuf> {
-    let path = dbg!(dbg!(llvm_path())?.join("ld.lld"));
+    let path = llvm_path()?.join("ld.lld");
 
-    if dbg!(path.exists()) {
+    if path.exists() {
         Some(path)
     } else {
         None
