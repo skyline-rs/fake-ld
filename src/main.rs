@@ -41,6 +41,8 @@ fn find_lld() -> Option<String> {
         Some("/usr/bin/ld.lld".to_string())
     } else if Path::new("/usr/bin/ld.lld-10").exists() {
         Some("/usr/bin/ld.lld-10".to_string())
+    } else if Path::new(r#"C:\Program Files\LLVM\bin\ld.lld.exe"#).exists() {
+        Some(r#"C:\Program Files\LLVM\bin\ld.lld.exe"#.to_string())
     } else if let Some(path) = brew_path() {
         Some(path.to_string_lossy().to_string())
     } else {
