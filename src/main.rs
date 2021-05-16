@@ -25,9 +25,9 @@ fn llvm_path() -> Option<PathBuf> {
 }
 
 fn brew_path() -> Option<PathBuf> {
-    let path = llvm_path()?.join("ld.lld");
+    let path = dbg!(dbg!(llvm_path())?.join("ld.lld"));
 
-    if path.exists() {
+    if dbg!(path.exists()) {
         Some(path)
     } else {
         None
