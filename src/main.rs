@@ -39,6 +39,8 @@ fn find_lld() -> Option<String> {
         Some("ld.lld".to_string())
     } else if Path::new("/usr/bin/ld.lld").exists() {
         Some("/usr/bin/ld.lld".to_string())
+    } else if Path::new("/usr/bin/ld.lld-10").exists() {
+        Some("/usr/bin/ld.lld-10".to_string())
     } else if let Some(path) = brew_path() {
         Some(path.to_string_lossy().to_string())
     } else {
@@ -61,9 +63,9 @@ fn main() {
         .flatten()
         .collect();
 
-    let ldd = find_lld().expect("ld.lld not found");
+    let lld = dbg!(find_lld()).expect("ld.lld not found");
 
-    let status = Command::new(&ldd).args(&args).status().unwrap();
+    let status = Command::new(&lld).args(&args).status().unwrap();
 
     if let Some(x) = status.code() {
         std::process::exit(x);
