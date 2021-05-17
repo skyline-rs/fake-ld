@@ -50,6 +50,27 @@ fn find_lld() -> Option<String> {
     }
 }
 
+const WINDOWS_PATH: &str = r#"C:\ProgramData\Chocolatey\bin\gcc.exe"#;
+
+fn gcc() {
+    let args: Vec<String> = env::args().skip(1).collect();
+
+    let cmd = if Path::new(WINDOWS_PATH).exists() {
+        WINDOWS_PATH
+    } else {
+        "gcc"
+    };
+
+    let status = Command::new(cmd)
+        .args(&args)
+        .status()
+        .unwrap();
+
+    if let Some(x) = status.code() {
+        std::process::exit(x);
+    }
+}
+
 pub fn main() {
     let args: Vec<String> = env::args()
         .skip(1)
@@ -65,6 +86,10 @@ pub fn main() {
         })
         .flatten()
         .collect();
+
+    if !args.iter().any(|arg| arg.starts_with("-l")) {
+        gcc();
+    }
 
     if args.len() == 1 && args[0].starts_with('@') {
         let file_path = &args[0][1..];
