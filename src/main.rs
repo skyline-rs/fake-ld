@@ -87,7 +87,18 @@ pub fn main() {
         .flatten()
         .collect();
 
-    if !args.iter().any(|arg| arg.starts_with("-l")) {
+        macro_rules! any_arg_is {
+            ($lit:literal) => {
+                args.iter().any(|arg| arg == $lit)
+            }
+        }
+
+    let is_ld = args.iter().any(|arg| arg.starts_with("-l"))
+                    || any_arg_is!("--eh-frame-hdr")
+                    || any_arg_is!("--whole-archive")
+                    || any_arg_is!("--no-whole-archive");
+
+    if !is_ld {
         gcc();
     }
 
