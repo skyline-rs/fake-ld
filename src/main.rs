@@ -70,6 +70,7 @@ fn main() {
         let file_path = &args[0][1..];
         let contents = fs::read_to_string(file_path).unwrap();
 
+        dbg!(&contents);
         let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "");
         fs::write(file_path, contents).unwrap();
     }
