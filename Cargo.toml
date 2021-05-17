@@ -16,5 +16,13 @@ path = "src/gcc_forwarder.rs"
 name = "rust-zip"
 path = "src/rust-zip.rs"
 
+[[bin]]
+name = "gcc"
+path = "src/main.rs"
+required-features = ["fake-gcc"]
+
 [dependencies]
 zip = "0.5.12"
+
+[features]
+fake-gcc = []

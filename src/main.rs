@@ -50,7 +50,7 @@ fn find_lld() -> Option<String> {
     }
 }
 
-fn main() {
+pub fn main() {
     let args: Vec<String> = env::args()
         .skip(1)
         .map(|x| {
