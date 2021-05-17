@@ -1,4 +1,4 @@
-use std::env;
+use std::{fs, env};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
@@ -65,6 +65,14 @@ fn main() {
         })
         .flatten()
         .collect();
+
+    if args.len() == 1 && args[0].starts_with('@') {
+        let file_path = &args[0][1..];
+        let contents = fs::read_to_string(file_path).unwrap();
+
+        let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "");
+        fs::write(file_path, contents).unwrap();
+    }
 
     let lld = dbg!(find_lld()).expect("ld.lld not found");
 
