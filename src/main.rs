@@ -124,7 +124,7 @@ pub fn main() {
         dbg!(&contents);
         let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "") + {
             if cfg!(feature = "fake-gcc") && !is_ld {
-                " -fuse-ld=lld"
+                " -Wl,-fuse-ld=lld"
             } else {
                 ""
             }
