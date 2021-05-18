@@ -103,17 +103,14 @@ pub fn main() {
         .flatten()
         .collect();
 
-    #[cfg(feature = "fake-gcc")]
     macro_rules! any_arg_is {
         ($lit:literal) => {
             args.iter().any(|arg| arg == $lit)
         }
     }
 
-    #[cfg(feature = "fake-gcc")]
     let is_definitely_ld = env::args().next().unwrap().contains("fake-ld");
 
-    #[cfg(feature = "fake-gcc")]
     let is_ld = is_definitely_ld || ((args.iter().any(|arg| arg.starts_with("-l"))
                     || any_arg_is!("--eh-frame-hdr")
                     || any_arg_is!("--whole-archive")
@@ -125,7 +122,13 @@ pub fn main() {
         let contents = fs::read_to_string(file_path).unwrap();
 
         dbg!(&contents);
-        let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "") + " -fuse-ld=lld";
+        let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "") + {
+            if cfg!(feature = "fake-gcc") && !is_ld {
+                " -fuse-ld=lld"
+            } else {
+                ""
+            }
+        };
         fs::write(file_path, contents).unwrap();
 
         #[cfg(feature = "fake-gcc")]
