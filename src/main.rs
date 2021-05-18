@@ -50,8 +50,10 @@ fn find_lld() -> Option<String> {
     }
 }
 
+#[cfg(feature = "fake-gcc")]
 const WINDOWS_PATH: &str = r#"C:\ProgramData\Chocolatey\bin\gcc.exe"#;
 
+#[cfg(feature = "fake-gcc")]
 fn gcc() {
     let args: Vec<String> = env::args().skip(1).collect();
 
@@ -65,6 +67,16 @@ fn gcc() {
         .args(&args)
         .status()
         .unwrap();
+
+    if let Some(x) = status.code() {
+        std::process::exit(x);
+    }
+}
+
+fn lld(args: Vec<String>) {
+    let lld = dbg!(find_lld()).expect("ld.lld not found");
+
+    let status = Command::new(&lld).args(&args).status().unwrap();
 
     if let Some(x) = status.code() {
         std::process::exit(x);
@@ -87,20 +99,18 @@ pub fn main() {
         .flatten()
         .collect();
 
-        macro_rules! any_arg_is {
-            ($lit:literal) => {
-                args.iter().any(|arg| arg == $lit)
-            }
+    #[cfg(feature = "fake-gcc")]
+    macro_rules! any_arg_is {
+        ($lit:literal) => {
+            args.iter().any(|arg| arg == $lit)
         }
+    }
 
+    #[cfg(feature = "fake-gcc")]
     let is_ld = args.iter().any(|arg| arg.starts_with("-l"))
                     || any_arg_is!("--eh-frame-hdr")
                     || any_arg_is!("--whole-archive")
                     || any_arg_is!("--no-whole-archive");
-
-    if !is_ld {
-        gcc();
-    }
 
     if args.len() == 1 && args[0].starts_with('@') {
         let file_path = &args[0][1..];
@@ -109,13 +119,16 @@ pub fn main() {
         dbg!(&contents);
         let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "");
         fs::write(file_path, contents).unwrap();
+
+        lld(args);
+        return;
     }
 
-    let lld = dbg!(find_lld()).expect("ld.lld not found");
-
-    let status = Command::new(&lld).args(&args).status().unwrap();
-
-    if let Some(x) = status.code() {
-        std::process::exit(x);
+    #[cfg(feature = "fake-gcc")]
+    if !is_ld {
+        gcc();
+        return;
     }
+
+    lld(args);
 }
