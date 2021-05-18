@@ -64,7 +64,7 @@ fn gcc() {
     };
 
     if args.len() > 1 || (args.len() == 1 && !args[0].starts_with('@')) {
-        args.push(String::from("-fuse-ld=lld"));
+        args.push(String::from("-Wl,-fuse-ld=lld"));
     }
 
     let status = Command::new(cmd)
