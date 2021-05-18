@@ -55,13 +55,17 @@ const WINDOWS_PATH: &str = r#"C:\ProgramData\Chocolatey\bin\gcc.exe"#;
 
 #[cfg(feature = "fake-gcc")]
 fn gcc() {
-    let args: Vec<String> = env::args().skip(1).collect();
+    let mut args: Vec<String> = env::args().skip(1).collect();
 
     let cmd = if Path::new(WINDOWS_PATH).exists() {
         WINDOWS_PATH
     } else {
         "gcc"
     };
+
+    if args.len() > 1 || (args.len() == 1 && !args[0].starts_with('@')) {
+        args.push(String::from("-fuse-ld=ld.lld"));
+    }
 
     let status = Command::new(cmd)
         .args(&args)
@@ -107,21 +111,25 @@ pub fn main() {
     }
 
     #[cfg(feature = "fake-gcc")]
-    let is_ld = args.iter().any(|arg| arg.starts_with("-l"))
+    let is_ld = (args.iter().any(|arg| arg.starts_with("-l"))
                     || any_arg_is!("--eh-frame-hdr")
                     || any_arg_is!("--whole-archive")
-                    || any_arg_is!("--no-whole-archive");
+                    || any_arg_is!("--no-whole-archive"))
+                && !args.contains(&String::from("-m64"));
 
     if args.len() == 1 && args[0].starts_with('@') {
         let file_path = &args[0][1..];
         let contents = fs::read_to_string(file_path).unwrap();
 
         dbg!(&contents);
-        let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "");
+        let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "") + " -fuse-ld=ld.lld";
         fs::write(file_path, contents).unwrap();
 
-        lld(args);
-        return;
+        #[cfg(feature = "fake-gcc")]
+        if is_ld {
+            lld(args);
+            return;
+        }
     }
 
     #[cfg(feature = "fake-gcc")]
