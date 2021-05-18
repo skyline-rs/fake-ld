@@ -64,7 +64,7 @@ fn gcc() {
     };
 
     if args.len() > 1 || (args.len() == 1 && !args[0].starts_with('@')) {
-        args.push(String::from("-fuse-ld=ld.lld"));
+        args.push(String::from("-fuse-ld=lld"));
     }
 
     let status = Command::new(cmd)
@@ -111,18 +111,21 @@ pub fn main() {
     }
 
     #[cfg(feature = "fake-gcc")]
-    let is_ld = (args.iter().any(|arg| arg.starts_with("-l"))
+    let is_definitely_ld = env::args().next().unwrap().contains("fake-ld");
+
+    #[cfg(feature = "fake-gcc")]
+    let is_ld = is_definitely_ld || ((args.iter().any(|arg| arg.starts_with("-l"))
                     || any_arg_is!("--eh-frame-hdr")
                     || any_arg_is!("--whole-archive")
                     || any_arg_is!("--no-whole-archive"))
-                && !args.contains(&String::from("-m64"));
+                && !args.contains(&String::from("-m64")));
 
     if args.len() == 1 && args[0].starts_with('@') {
         let file_path = &args[0][1..];
         let contents = fs::read_to_string(file_path).unwrap();
 
         dbg!(&contents);
-        let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "") + " -fuse-ld=ld.lld";
+        let contents = contents.replace("-Wl,-rpath,$ORIGIN/../lib", "") + " -fuse-ld=lld";
         fs::write(file_path, contents).unwrap();
 
         #[cfg(feature = "fake-gcc")]
