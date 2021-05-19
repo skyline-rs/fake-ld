@@ -25,7 +25,7 @@ fn walk_dir<W>(zip: &mut ZipWriter<W>, path: &Path, parent_in_zip: Option<&Path>
                 &path_in_zip,
                 FileOptions::default().compression_method(CompressionMethod::Deflated)
             ).unwrap();
-            zip.write(&fs::read(&path).unwrap()).unwrap();
+            zip.write_all(&fs::read(&path).unwrap()).unwrap();
         }
     }
 }
