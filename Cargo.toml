@@ -11,10 +11,11 @@ path = "src/main.rs"
 #[[bin]]
 #name = "cc"
 #path = "src/gcc_forwarder.rs"
+#required-features = ["gcc-forwarder"]
 
 [[bin]]
 name = "cc"
-path = "src/zig_cc.rs"
+path = "src/cc.rs"
 
 [[bin]]
 name = "rust-zip"
@@ -30,3 +31,4 @@ zip = "0.5.12"
 
 [features]
 fake-gcc = []
+gcc-forwarder = []
