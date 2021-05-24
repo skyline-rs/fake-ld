@@ -91,7 +91,6 @@ pub fn main() {
     let args: Vec<String> = env::args()
         .skip(1)
         .map(|x| {
-            dbg!(&x);
             if x.starts_with("-Wl,") {
                 x.split(',').skip(1).map(String::from).collect::<Vec<_>>().into_iter()
             } else if x == "-fuse-ld=lld" {

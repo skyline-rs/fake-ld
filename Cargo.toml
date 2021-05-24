@@ -8,9 +8,13 @@ edition = "2018"
 name = "fake-ld"
 path = "src/main.rs"
 
+#[[bin]]
+#name = "cc"
+#path = "src/gcc_forwarder.rs"
+
 [[bin]]
 name = "cc"
-path = "src/gcc_forwarder.rs"
+path = "src/zig_cc.rs"
 
 [[bin]]
 name = "rust-zip"
